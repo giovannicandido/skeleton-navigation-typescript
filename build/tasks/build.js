@@ -8,6 +8,7 @@ var assign = Object.assign || require('object.assign');
 var notify = require("gulp-notify");
 var typescript = require('gulp-typescript');
 var tsc = require('typescript');
+var browserSync = require('browser-sync');
 
 var tsProject = typescript.createProject('./tsconfig.json', { typescript: tsc });
 
@@ -18,9 +19,9 @@ var tsProject = typescript.createProject('./tsconfig.json', { typescript: tsc })
 gulp.task('build-system', function() {
   return gulp.src(paths.dtsSrc.concat(paths.source))
     .pipe(plumber())
-    .pipe(sourcemaps.init({loadMaps: true}))    
+    .pipe(sourcemaps.init({loadMaps: true}))
     .pipe(changed(paths.output, {extension: '.js'}))
-    .pipe(typescript(tsProject))  
+    .pipe(typescript(tsProject))
     .pipe(sourcemaps.write({includeContent: true}))
     .pipe(gulp.dest(paths.output));
 });
@@ -39,6 +40,11 @@ gulp.task('build-css', function() {
     .pipe(gulp.dest(paths.output));
 });
 
+gulp.task('stream-css', function(){
+  return gulp.src(paths.style)
+    .pipe(changed(paths.output, {extension: '.css'}))
+    .pipe(browserSync.stream());
+});
 // this task calls the clean task (located
 // in ./clean.js), then runs the build-system
 // and build-html tasks in parallel
